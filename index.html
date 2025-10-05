@@ -14,6 +14,7 @@
     align-items: center;
     height: 100vh;
   }
+
   .card {
     background: #ffffff;
     padding: 40px 30px;
@@ -25,12 +26,13 @@
     text-align: center;
     position: relative;
     overflow: hidden;
-
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    min-height: 480px; /* slightly smaller */
   }
+
   #confetti-canvas {
     position: absolute;
     top: 0; left: 0;
@@ -39,47 +41,53 @@
     pointer-events: none;
   }
 
-  /* Horizontal Carousel */
-  .carousel {
-    display: flex;
-    gap: 16px;
-    overflow-x: auto;
-    padding: 10px;
-    scroll-behavior: smooth;
-    max-width: 500px;
+  /* === 3D CUBE === */
+  .scene {
+    width: 180px;
+    height: 180px;
+    perspective: 800px;
     margin-bottom: 24px;
   }
-  .carousel::-webkit-scrollbar { display: none; }
-  .slide {
-    min-width: 220px;
-    height: 150px;
-    border-radius: 12px;
-    flex-shrink: 0;
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
-    font-weight: bold;
-    color: white;
-    font-size: 16px;
-    padding: 8px;
-    background-size: cover;
-    background-position: center;
+
+  .cube {
+    width: 100%;
+    height: 100%;
     position: relative;
-    box-shadow: 0 6px 16px rgba(0,0,0,0.25);
-  }
-  .slide::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: 12px;
-    background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
-  }
-  .slide span {
-    position: relative;
-    z-index: 2;
+    transform-style: preserve-3d;
+    animation: spin 6s linear infinite;
   }
 
-  /* Text after click */
+  .face {
+    position: absolute;
+    width: 180px;
+    height: 180px;
+    border: 2px solid #111827;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    font-weight: bold;
+    color: #111827;
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.1);
+    backface-visibility: hidden;
+  }
+
+  .front  { transform: translateZ(90px); }
+  .back   { transform: rotateY(180deg) translateZ(90px); }
+  .right  { transform: rotateY(90deg) translateZ(90px); }
+  .left   { transform: rotateY(-90deg) translateZ(90px); }
+  .top    { transform: rotateX(90deg) translateZ(90px); }
+  .bottom { transform: rotateX(-90deg) translateZ(90px); }
+
+  @keyframes spin {
+    0%   { transform: rotateX(0deg) rotateY(0deg); }
+    50%  { transform: rotateX(180deg) rotateY(180deg); }
+    100% { transform: rotateX(360deg) rotateY(360deg); }
+  }
+
+  /* === Text Animation === */
   .structure-text {
     display: none;
     stroke: #111827;
@@ -89,18 +97,21 @@
     max-width: 880px;
     margin: 0 auto;
   }
+
   .structure-text text {
     text-anchor: middle;
     dominant-baseline: middle;
   }
+
   .structure-text.visible {
     display: block;
   }
+
   @keyframes draw {
     to { stroke-dashoffset: 0; }
   }
 
-  /* Cake */
+  /* === Cake === */
   .cake {
     display: none;
     margin: 20px auto 0 auto;
@@ -108,27 +119,30 @@
     stroke-width: 2;
     fill: none;
   }
+
   .cake.visible {
     display: block;
   }
+
   .flame {
     fill: orange;
     opacity: 0;
     animation: flicker 0.6s infinite alternate;
   }
+
   @keyframes flicker {
     0% { opacity: 0.4; transform: translateY(0px) scale(1); }
     100% { opacity: 1; transform: translateY(-2px) scale(1.1); }
   }
 
-  /* Button */
+  /* === Button === */
   .gift {
     background: transparent;
     border: 2px solid #111827;
     border-radius: 6px;
     cursor: pointer;
-    margin-top: 16px;
-    padding: 12px 28px;
+    margin-top: 60px;
+    padding: 10px 24px;
     font-size: 16px;
     color: #111827;
     font-weight: bold;
@@ -136,6 +150,7 @@
     position: relative;
     transition: all 0.3s ease;
   }
+
   .gift:hover {
     background: #111827;
     color: #ffffff;
@@ -146,22 +161,15 @@
   <div class="card">
     <canvas id="confetti-canvas"></canvas>
 
-    <!-- Modern Architecture Carousel -->
-    <div id="carousel" class="carousel">
-      <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80');">
-        <span>Minimalist Villa</span>
-      </div>
-      <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=800&q=80');">
-        <span>Modern Tower</span>
-      </div>
-      <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&w=800&q=80');">
-        <span>Futuristic Home</span>
-      </div>
-      <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1620121692029-d088224ddc74?auto=format&fit=crop&w=800&q=80');">
-        <span>Glass Architecture</span>
-      </div>
-      <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=800&q=80');">
-        <span>Contemporary Design</span>
+    <!-- 3D SPINNING CUBE -->
+    <div class="scene">
+      <div class="cube">
+        <div class="face front">Form</div>
+        <div class="face back">Design</div>
+        <div class="face right">3D</div>
+        <div class="face left">Build</div>
+        <div class="face top">Structure</div>
+        <div class="face bottom">Space</div>
       </div>
     </div>
 
@@ -195,7 +203,6 @@
   </div>
 
   <script>
-    // === Confetti ===
     const canvas = document.getElementById('confetti-canvas');
     const ctx = canvas.getContext('2d');
     let W, H, particles = [];
@@ -215,6 +222,7 @@
         ctx.fill();
       };
     }
+
     function draw() {
       ctx.clearRect(0, 0, W, H);
       particles.forEach(p => {
@@ -225,15 +233,14 @@
       });
       requestAnimationFrame(draw);
     }
+
     function initSparks() {
       particles = [];
       for (let i = 0; i < 80; i++) particles.push(new SparkParticle());
       draw();
     }
 
-    // === Button Action ===
     document.getElementById('gift').addEventListener('click', () => {
-      document.getElementById('carousel').style.display = "none"; // hide carousel
       const structure = document.getElementById('structure');
       structure.classList.add('visible');
       document.querySelectorAll('#structure text').forEach((t,i)=>{
@@ -241,6 +248,7 @@
         t.style.strokeDashoffset = "1500";
         t.style.animation = `draw 1.5s ease forwards ${i*0.4}s`;
       });
+
       const cake = document.getElementById('cake');
       cake.classList.add('visible');
       cake.querySelectorAll("rect, ellipse").forEach((part,i)=>{
@@ -250,7 +258,9 @@
           part.style.animation = `draw 1s ease forwards ${1 + i*0.3}s`;
         }
       });
+
       initSparks();
+      document.querySelector('.scene').style.display = "none"; // Hide cube
       document.getElementById('gift').style.display = "none";
     });
   </script>
